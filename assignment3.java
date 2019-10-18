@@ -7,7 +7,7 @@
 
 import java.sql.*;
 
-public class DBTest 
+public class assignment3 
 {
 
   private static Connection getConnection() throws ClassNotFoundException, SQLException 
