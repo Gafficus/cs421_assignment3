@@ -9,24 +9,75 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import java.util.Arrays;
-abstract class basePlane{
+class basePlane{
 	private int NUMVIPSEATS;
 	private int NUMLUXSEATS;
-	public void setVIPSEATS(int numberOfSeats){NUMVIPSEATS = numberOfSeats;}
-	public void setLUXSEATS(int numberOfSeats){NUMLUXSEATS = numberOfSeats;}
-	public void seatVIP(){}
-	public void seatLUX(){}
-}
-class planeRC407 extends basePlane {
-}
-class planeTR707 extends basePlane{
+	private int vipOnBoard;
+	private int luxOnBoard;
+	private int planeNumber;
+	public int getPlaneNumber(){return planeNumber;}
 
-}
-class planeKR381 extends basePlane{
+	private int value; 
+	public int getValue(){return value;}
 
+	private String planeID;
+	public String getPlaneID(){return planeID;}
+
+	private Date departDate;
+	public Date getDate(){return departDate;}
+
+	private ResultSet[] vipSeats;
+	private ResultSet[] luxSeats;
+	public void seatVIP(ResultSet passengerInfo)
+	{
+		if(vipOnBoard < vipSeats.length())
+		{
+			vipSeats[vipOnBoard] = passengerInfo;
+			vipOnBoard++;
+		}
+		else
+		{
+			if(luxOnBoard + (vipOnBoard-NUMVIPSEATS) < luxSeats)
+			{
+				luxSeats[luxOnBoard + (vipOnBoard-NUMVIPSEATS)] = passengerInfo;
+			}
+			else
+			{
+
+			}
+		}
+	}
+	public void seatLUX()
+	{
+
+	}
+	/*Constructor to build a plane object.
+	 *planeType is 1,2,or 3 determined by the preference of the passenger
+	 *theDate is the desired date the passenger will be leaving
+	 */
+	public basePlane(int planeType, String theDate) throws ClassNotFoundException, SQLException
+	{
+		Connection con;
+		ResultSet res;
+		Statement state;
+		state = con.createStatement();
+		res = state.executeQuery("select tuid, plane_id, max_vip, max_luxury from planes_table where tuid = "+ planeType);
+		NUMVIPSEATS = rs.getInt(max_vip);
+		NUMLUXSEATS = rs.getInt(max_luxury);
+		vipSeats = new ResultSet[max_vip];
+		luxSeats = new ResultSet[max_luxury];
+		departDate = new Date(theDate);
+		vipOnBoard = 0;
+		luxOnBoard = 0;
+
+	}
 }
+
 public class assignment3 
-{
+{ 
+	public Vector planeRC407;
+	public Vector planeTR707;
+	public Vector planeKR381;
   private static Connection getConnection() throws ClassNotFoundException, SQLException 
   {
     Connection con;
@@ -261,22 +312,32 @@ public class assignment3
   	Connection con;
     PreparedStatement prep;
     ResultSet res;
+    Statement stat;
   	int indexValue = 0;
   	int tuid = Integer.parseInt(info[1]);
-  	
     con = getConnection();
-    prep = con.prepareStatement("INSERT INTO passengers_table VALUES(?,?,?,?,?);");
+    stat = con.createStatement();
+  	res = stat.executeQuery("select tuid from passengers_table where tuid = " +info[1]);
+  	if(!res.next())
+  	{
+  		prep = con.prepareStatement("INSERT INTO passengers_table VALUES(?,?,?,?,?);");
     prep.setInt(1, tuid);
     prep.setString(2, info[2]);
     prep.setString(3, info[3]);
     prep.setString(4, info[4]);
     prep.setString(5, info[5]);
     prep.execute();
+  	}
+    
 
   }
   private static void insertScheduledFlight(String info[]) throws SQLException
   {
-  	System.out.println(Arrays.toString(info));
+  	//Connection con;
+  	//PreparedStatement pre;
+  	//con = getConnection();
+  	//prep = con.prepareStatement("insert into schedules_table values (?,?,?,?,?,?);");
+  	//prep.setInt
   }
   public static ResultSet displayUsers() throws SQLException, ClassNotFoundException 
   {
@@ -290,7 +351,8 @@ public class assignment3
         con = getConnection();
       }
      state = con.createStatement();
-     res = state.executeQuery("SELECT tuid, first_initial, last_name FROM passengers_table");
+     int index = 2;
+     res = state.executeQuery("SELECT tuid, first_initial, last_name FROM passengers_table where tuid = "+ index);
      return res;
   }
 
