@@ -6,26 +6,25 @@
 // Executed with java -classpath sqlite-jdbc-3.27.2.1.jar DBTest
 
 import java.sql.*;
-
+class testingClass {
+}
 public class assignment3 
 {
-
   private static Connection getConnection() throws ClassNotFoundException, SQLException 
   {
     Connection con;
 
     // Database path -- if it's new database, it will be created in the project folder
     con = DriverManager.getConnection("jdbc:sqlite:SQLiteTest1.db");
-    return con;
+    return con; 
   }
 
   private static void buildDatabase(boolean DBExists) throws ClassNotFoundException, SQLException 
-  {
+  {  
     Connection con;
     Statement state, state2;
     ResultSet res;
     PreparedStatement prep;
-
     if (!DBExists) 
       {
         DBExists = true;
@@ -33,33 +32,62 @@ public class assignment3
         con = getConnection();
      
         // Check for database table existence and if it's not there, create it and add 2 records
-	state = con.createStatement();
-	res = state.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='user'");
-	if (!res.next()) 
-	  {
-	    System.out.println("Building the USER table");
-	    state2 = con.createStatement();
-	    state2.executeUpdate("CREATE TABLE User(" +
-                                 "ID INTEGER," +
-				 "FirstName VARCHAR(60)," +
-				 "LastName VARCHAR(60)," + 
-                                 "PRIMARY KEY (ID));");
+        
+        state = con.createStatement();
+        res = state.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='User'");
+        if (!res.next()) 
+          {
+            System.out.println("Building the USER table");
+            state2 = con.createStatement();
+            state2.executeUpdate("CREATE TABLE User(" +
+                                       "ID INTEGER," +
+               "FirstName VARCHAR(60)," +
+               "LastName VARCHAR(60)," + 
+                                       "PRIMARY KEY (ID));");
 
-	     //Add a couple of records using parameters
-	     System.out.println("Add record 1 to USER table");
+             //Add a couple of records using parameters
+             System.out.println("Add record 1 to USER table");
+                   prep = con.prepareStatement("INSERT INTO User VALUES(?,?,?);");
+             prep.setInt(1, 1001);
+             prep.setString(2, "Sue");
+             prep.setString(3, "Smith");
+             prep.execute();
+                
+             System.out.println("Add record 2 to USER table");
              prep = con.prepareStatement("INSERT INTO User VALUES(?,?,?);");
-	     prep.setInt(1, 1001);
-	     prep.setString(2, "Sue");
-	     prep.setString(3, "Smith");
-	     prep.execute();
-				  
-	     System.out.println("Add record 2 to USER table");
-	     prep = con.prepareStatement("INSERT INTO User VALUES(?,?,?);");
-	     prep.setInt(1, 1002);
-	     prep.setString(2, "John");
-	     prep.setString(3, "Jones");
-	     prep.execute();
-	   }
+             prep.setInt(1, 1002);
+             prep.setString(2, "John");
+             prep.setString(3, "Jones");
+             prep.execute();
+           }
+          
+        //--------------------BEGIN PASSENGERS
+        state = con.createStatement();
+        res = state.executeQuery("select name from sqlite_master where type ='table' and name = 'passengers_table'");
+        if(!res.next())
+        {
+        	System.out.println("Build passengers_table");
+        	state2 = con.createStatement();
+        	state2.executeUpdate("create table passengers_table" +
+									"( tuid integer," +
+									   "first_initial varchar(1)," +
+									   "middle_initial varchar(1)," +
+							  	       "last_name varchar(60)," +
+								       "phone_number varchar(60)," +
+									   "primary key (tuid)" +
+									 ");");
+        	//TODO BUILD PASSENGERS FROM FILE
+        }
+        //--------------------END PASSENGERS
+
+        //--------------------BEGIN PLANES
+        //--------------------END PLANES
+
+        //--------------------BEGIN FEES
+        //--------------------END FEES
+
+        //--------------------BEGIN FLIGHTS
+        //--------------------END FLIGHTS
      }
   }
 
