@@ -239,15 +239,40 @@ public class assignment3
   	String file = "planes.txt";
   	BufferedReader br = new BufferedReader(new FileReader(file));
   	String cLine = br.readLine();
-  	br.close();
-  	String tokens[] = cLine.split( " ");
-  	System.out.println(tokens[0]);
-  	if( tokens[0].equals("P")){insertPassenger(tokens);}
-  	else {insertScheduledFlight(tokens);}
+  	while(cLine != null){
+  		String tokens[] = cLine.split( " ");
+	  	System.out.println("Loading information of passenger " + tokens[1]);
+	  	try{
+	  		if( tokens[0].equals("P")){insertPassenger(tokens);}
+	  		else {insertScheduledFlight(tokens);}
+	  	}
+	  	catch (Exception e) 
+	      {
+			e.printStackTrace();
+	      }
+	    cLine = br.readLine();
+	 }
+  	
+      br.close();
   }
-  private static void insertPassenger(String info[]) throws SQLException
+  private static void insertPassenger(String info[]) throws ClassNotFoundException,SQLException
   {
   	
+  	Connection con;
+    PreparedStatement prep;
+    ResultSet res;
+  	int indexValue = 0;
+  	int tuid = Integer.parseInt(info[1]);
+  	
+    con = getConnection();
+    prep = con.prepareStatement("INSERT INTO passengers_table VALUES(?,?,?,?,?);");
+    prep.setInt(1, tuid);
+    prep.setString(2, info[2]);
+    prep.setString(3, info[3]);
+    prep.setString(4, info[4]);
+    prep.setString(5, info[5]);
+    prep.execute();
+
   }
   private static void insertScheduledFlight(String info[]) throws SQLException
   {
@@ -265,7 +290,7 @@ public class assignment3
         con = getConnection();
       }
      state = con.createStatement();
-     res = state.executeQuery("SELECT ID, Firstname, Lastname FROM User");
+     res = state.executeQuery("SELECT tuid, first_initial, last_name FROM passengers_table");
      return res;
   }
 
@@ -291,7 +316,7 @@ public class assignment3
 	// Iterate over the resultset, print out each record's details
         while (rs.next()) 
           {
-	    System.out.println("ID: " + rs.getInt("ID") + " -- User: " + rs.getString("FirstName") + " " + rs.getString("LastName"));
+	    System.out.println("ID: " + rs.getInt("tuid") + " -- User: " + rs.getString("first_initial") + " " + rs.getString("last_name"));
 	  }
       } 
     catch (Exception e) 
