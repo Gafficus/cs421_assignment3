@@ -1,10 +1,13 @@
-// Need SQLLite Driver from
-// https://bitbucket.org/xerial/sqlite-jdbc/downloads
-// Put in same folder as this source code file
 
-// Compiled with javac DBTest.java
-// Executed with java -classpath sqlite-jdbc-3.27.2.1.jar DBTest
+// Compiled with javac assignment3.java
+// Executed with java -classpath ".;sqlite-jdbc-3.27.2.1.jar" assignment3
+//This program will schedule passengers for flights based on a database and text files
+//Created by Nathan Gaffney
 
+/*---------------------
+*Currently unfinished, the program will import data for passengers,
+* There is no functionality to schedule the passengers or to import the data
+*/
 import java.sql.*;
 import java.util.*;
 import java.io.*;
@@ -29,6 +32,9 @@ class basePlane{
 
 	private String[] vipSeats;
 	private String[] luxSeats;
+	/*seatVIP is the first part of the scheduling algorithm
+	VIP passengers will be placed in first available seat in VIP or 
+	overflow into luxury the luxury passenger will be passed back into the scheduler*/
 	public int seatVIP(String passengerInfo)
 	{
 		int seated = 1;
@@ -108,9 +114,10 @@ class basePlane{
 
 public class assignment3 
 { 
-	public Vector planeRC407;
-	public Vector planeTR707;
-	public Vector planeKR381;
+	//Create Vectors to hold full planes
+	public static Vector planeRC407;
+	public static Vector planeTR707;
+	public static Vector planeKR381;
   private static Connection getConnection() throws ClassNotFoundException, SQLException 
   {
     Connection con;
@@ -131,36 +138,6 @@ public class assignment3
         DBExists = true;
         
         con = getConnection();
-     
-        // Check for database table existence and if it's not there, create it and add 2 records
-        
-        state = con.createStatement();
-        res = state.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='User'");
-        if (!res.next()) 
-          {
-            System.out.println("Building the USER table");
-            state2 = con.createStatement();
-            state2.executeUpdate("CREATE TABLE User(" +
-                                       "ID INTEGER," +
-               "FirstName VARCHAR(60)," +
-               "LastName VARCHAR(60)," + 
-                                       "PRIMARY KEY (ID));");
-
-             //Add a couple of records using parameters
-             System.out.println("Add record 1 to USER table");
-             prep = con.prepareStatement("INSERT INTO User VALUES(?,?,?);");
-             prep.setInt(1, 1001);
-             prep.setString(2, "Sue");
-             prep.setString(3, "Smith");
-             prep.execute();
-                
-             System.out.println("Add record 2 to USER table");
-             prep = con.prepareStatement("INSERT INTO User VALUES(?,?,?);");
-             prep.setInt(1, 1002);
-             prep.setString(2, "John");
-             prep.setString(3, "Jones");
-             prep.execute();
-           }
           
         //--------------------BEGIN PASSENGERS
         state = con.createStatement();
@@ -385,8 +362,7 @@ public class assignment3
         con = getConnection();
       }
      state = con.createStatement();
-     int index = 2;
-     res = state.executeQuery("SELECT tuid, first_initial, last_name FROM passengers_table where tuid = "+ index);
+     res = state.executeQuery("SELECT tuid, first_initial, last_name FROM passengers_table");
      return res;
   }
 
@@ -414,7 +390,7 @@ public class assignment3
 	// Iterate over the resultset, print out each record's details
         while (rs.next()) 
           {
-	    System.out.println("ID: " + rs.getInt("tuid") + " -- User: " + rs.getString("first_initial") + " " + rs.getString("last_name"));
+	    System.out.println("ID: " + rs.getInt("tuid") + " -- Passenger: " + rs.getString("first_initial") + " " + rs.getString("last_name"));
 	  }
       } 
     catch (Exception e) 
