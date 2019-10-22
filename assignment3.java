@@ -9,6 +9,7 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import java.util.Arrays;
+import java.time.LocalDate;
 class basePlane{
 	private int NUMVIPSEATS;
 	private int NUMLUXSEATS;
@@ -23,22 +24,22 @@ class basePlane{
 	private String planeID;
 	public String getPlaneID(){return planeID;}
 
-	private Date departDate;
-	public Date getDate(){return departDate;}
+	private LocalDate departDate;
+	public LocalDate getDate(){return departDate;}
 
 	private String[] vipSeats;
 	private String[] luxSeats;
-	public int seatVIP(String passengerInfo[])
+	public int seatVIP(String passengerInfo)
 	{
 		int seated = 1;
-		if(vipOnBoard < vipSeats.length())
+		if(vipOnBoard < vipSeats.length)
 		{
 			vipSeats[vipOnBoard] = passengerInfo;
 			vipOnBoard++;
 		}
 		else
 		{
-			if(luxOnBoard + (vipOnBoard-NUMVIPSEATS) < luxSeats)
+			if(luxOnBoard + (vipOnBoard-NUMVIPSEATS) < luxSeats.length)
 			{
 				luxSeats[luxOnBoard + (vipOnBoard-NUMVIPSEATS)] = passengerInfo;
 			}
@@ -48,19 +49,34 @@ class basePlane{
 				{
 					for(int i = NUMLUXSEATS; i >= 0 ; i-- )
 					{
-						//if
+						String seatedType = luxSeats[i].substring(7,8);
+						if(seatedType.equals("L"))
+						{
+							String removedPass = luxSeats[i];
+							luxSeats[i] = passengerInfo;
+							try
+							{
+								assignment3.insertScheduledFlight(removedPass);
+							}
+							catch (Exception e) 
+      {
+								e.printStackTrace();
+						    }
+						}
+
 					}
 				}
 				else
 				{
-					int seated = 0;
+					 seated = 0;
 				}
 			}
 		}
+		return seated;
 	}
 	public void seatLUX()
 	{
-
+		int seated = 1;
 	}
 	/*Constructor to build a plane object.
 	 *planeType is 1,2,or 3 determined by the preference of the passenger
@@ -71,13 +87,19 @@ class basePlane{
 		Connection con;
 		ResultSet res;
 		Statement state;
+		con = DriverManager.getConnection("jdbc:sqlite:SQLiteTest1.db");
 		state = con.createStatement();
 		res = state.executeQuery("select tuid, plane_id, max_vip, max_luxury from planes_table where tuid = "+ planeType);
 		NUMVIPSEATS = res.getInt("max_vip");
 		NUMLUXSEATS = res.getInt("max_luxury");
 		vipSeats = new String[NUMVIPSEATS];
 		luxSeats = new String[NUMLUXSEATS];
-		departDate = new Date(theDate);
+		int day, month, year;
+		String intDates[] = theDate.split("/");
+		day = Integer.parseInt(intDates[0]);
+		month = Integer.parseInt(intDates[1]);
+		year = Integer.parseInt(intDates[2]);
+		departDate = LocalDate.of(day,month,year);
 		vipOnBoard = 0;
 		luxOnBoard = 0;
 
@@ -306,7 +328,7 @@ public class assignment3
 	  	System.out.println("Loading information of passenger " + tokens[1]);
 	  	try{
 	  		if( tokens[0].equals("P")){insertPassenger(tokens);}
-	  		else {insertScheduledFlight(tokens);}
+	  		else {insertScheduledFlight(cLine);}
 	  	}
 	  	catch (Exception e) 
 	      {
@@ -342,8 +364,9 @@ public class assignment3
     
 
   }
-  private static void insertScheduledFlight(String info[]) throws SQLException
+  public static void insertScheduledFlight(String info) throws SQLException
   {
+
   	//Connection con;
   	//PreparedStatement pre;
   	//con = getConnection();
@@ -376,7 +399,9 @@ public class assignment3
     ResultSet rs;
     Connection con;
     boolean DBExists = false;
-		
+	planeRC407 = new Vector();
+	planeTR707 = new Vector();
+	planeKR381 = new Vector();	
     try 
       {
       	readData();
