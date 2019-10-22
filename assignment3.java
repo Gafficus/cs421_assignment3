@@ -26,10 +26,11 @@ class basePlane{
 	private Date departDate;
 	public Date getDate(){return departDate;}
 
-	private ResultSet[] vipSeats;
-	private ResultSet[] luxSeats;
-	public void seatVIP(ResultSet passengerInfo)
+	private String[] vipSeats;
+	private String[] luxSeats;
+	public int seatVIP(String passengerInfo[])
 	{
+		int seated = 1;
 		if(vipOnBoard < vipSeats.length())
 		{
 			vipSeats[vipOnBoard] = passengerInfo;
@@ -43,7 +44,17 @@ class basePlane{
 			}
 			else
 			{
-
+				if(vipOnBoard < (NUMVIPSEATS + NUMLUXSEATS))
+				{
+					for(int i = NUMLUXSEATS; i >= 0 ; i-- )
+					{
+						//if
+					}
+				}
+				else
+				{
+					int seated = 0;
+				}
 			}
 		}
 	}
@@ -62,10 +73,10 @@ class basePlane{
 		Statement state;
 		state = con.createStatement();
 		res = state.executeQuery("select tuid, plane_id, max_vip, max_luxury from planes_table where tuid = "+ planeType);
-		NUMVIPSEATS = rs.getInt(max_vip);
-		NUMLUXSEATS = rs.getInt(max_luxury);
-		vipSeats = new ResultSet[max_vip];
-		luxSeats = new ResultSet[max_luxury];
+		NUMVIPSEATS = res.getInt("max_vip");
+		NUMLUXSEATS = res.getInt("max_luxury");
+		vipSeats = new String[NUMVIPSEATS];
+		luxSeats = new String[NUMLUXSEATS];
 		departDate = new Date(theDate);
 		vipOnBoard = 0;
 		luxOnBoard = 0;
