@@ -47,7 +47,7 @@ public class assignment3
 
              //Add a couple of records using parameters
              System.out.println("Add record 1 to USER table");
-                   prep = con.prepareStatement("INSERT INTO User VALUES(?,?,?);");
+             prep = con.prepareStatement("INSERT INTO User VALUES(?,?,?);");
              prep.setInt(1, 1001);
              prep.setString(2, "Sue");
              prep.setString(3, "Smith");
@@ -81,13 +81,139 @@ public class assignment3
         //--------------------END PASSENGERS
 
         //--------------------BEGIN PLANES
+        state = con.createStatement();
+        res = state.executeQuery("select name from sqlite_master where type = 'table' and name = 'planes_table'");
+        if(!res.next())
+        {
+        	System.out.println("Build planes_table");
+        	state2 = con.createStatement();
+        	state2.executeUpdate("create table planes_table"+
+									"(tuid integer,"+
+									"plane_id varchar(5),"+
+								    "max_vip integer,"+
+								    "max_luxury integer,"+
+									"primary key (tuid)"+
+									");");
+        	//Plan One
+        	prep = con.prepareStatement("INSERT INTO planes_table VALUES(?,?,?,?);");
+            prep.setInt(1, 1);
+            prep.setString(2, "RC407");
+            prep.setInt(3, 4);
+            prep.setInt(4, 6);
+            prep.execute();
+
+            //Plane Two
+            prep = con.prepareStatement("INSERT INTO planes_table VALUES(?,?,?,?);");
+            prep.setInt(1, 2);
+            prep.setString(2, "TR707");
+            prep.setInt(3, 3);
+            prep.setInt(4, 5);
+            prep.execute();
+
+            //Plane Three
+            prep = con.prepareStatement("INSERT INTO planes_table VALUES(?,?,?,?);");
+            prep.setInt(1, 3);
+            prep.setString(2, "KR381");
+            prep.setInt(3, 6);
+            prep.setInt(4, 8);
+            prep.execute();
+        }
         //--------------------END PLANES
 
         //--------------------BEGIN FEES
+        state = con.createStatement();
+        res = state.executeQuery("select name from sqlite_master where type = 'table' and name = 'fees_table'");
+        if(!res.next())
+        {
+        	System.out.println("Build fees_table");
+        	state2 = con.createStatement();
+        	state2.executeUpdate("create table fees_table"+
+									"(tuid integer,"+
+									"seat_type varchar(1),"+
+								    "fee integer,"+
+								    "primary key (tuid)"+
+									");");
+        	//Plan One
+        	prep = con.prepareStatement("INSERT INTO fees_table VALUES(?,?,?);");
+            prep.setInt(1, 1);
+            prep.setString(2, "V");
+            prep.setInt(3, 4000);
+            prep.execute();
+
+            //Plane Two
+            prep = con.prepareStatement("INSERT INTO fees_table VALUES(?,?,?);");
+            prep.setInt(1, 2);
+            prep.setString(2, "L");
+            prep.setInt(3, 2500);
+            prep.execute();
+        }
         //--------------------END FEES
 
         //--------------------BEGIN FLIGHTS
+        state = con.createStatement();
+        res = state.executeQuery("select name from sqlite_master where type = 'table' and name = 'flights_table'");
+        if(!res.next())
+        {
+        	System.out.println("Build flights_table");
+        	state2 = con.createStatement();
+        	state2.executeUpdate("create table flights_table"+
+									"(tuid integer,"+
+									"plane_tuid integer,"+
+								    "airport_code varchar(3),"+
+								    "depart_gate integer,"+
+								    "depart_time varchar(60),"+
+								    "primary key (tuid),"+
+								    "foreign key (plane_tuid) references planes_table"+
+									");");
+
+            //Plane Two
+            prep = con.prepareStatement("INSERT INTO flights_table VALUES(?,?,?,?,?);");
+            prep.setInt(1, 1);
+            prep.setInt(2, 1);
+            prep.setString(3, "MBS");
+            prep.setInt(4, 3);
+            prep.setString(5, "07:00");
+            prep.execute();
+
+            prep = con.prepareStatement("INSERT INTO flights_table VALUES(?,?,?,?,?);");
+            prep.setInt(1, 2);
+            prep.setInt(2, 2);
+            prep.setString(3, "MBS");
+            prep.setInt(4, 1);
+            prep.setString(5, "13:00");
+            prep.execute();
+
+            prep = con.prepareStatement("INSERT INTO flights_table VALUES(?,?,?,?,?);");
+            prep.setInt(1, 3);
+            prep.setInt(2, 3);
+            prep.setString(3, "MBS");
+            prep.setInt(4, 2);
+            prep.setString(5, "21:00");
+            prep.execute();
+        }
         //--------------------END FLIGHTS
+
+        //--------------------BEGIN SCHEDULES
+        state = con.createStatement();
+        res = state.executeQuery("select name from sqlite_master where type ='table' and name = 'schedules_table'");
+        if(!res.next())
+        {
+        	System.out.println("Build schedules_table");
+        	state2 = con.createStatement();
+        	state2.executeUpdate("create table schedules_table" +
+									"( tuid integer," +
+									   "passenger_tuid varchar(1)," +
+									   "flight_tuid integer," +
+									   "flight_date varchar(60),"+
+							  	       "seat_section varchar(1)," +
+								       "seat_number integer," +
+									   "primary key (tuid)," +
+									   "foreign key (passenger_tuid) references passengers_table,"+
+									   "foreign key (flight_tuid) references flights_table"+
+									 ");");
+        	//TODO BUILD PASSENGERS FROM FILE
+        }
+        //--------------------END SCHEDULES
      }
   }
 
