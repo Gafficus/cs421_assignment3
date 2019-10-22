@@ -6,7 +6,24 @@
 // Executed with java -classpath sqlite-jdbc-3.27.2.1.jar DBTest
 
 import java.sql.*;
-class testingClass {
+import java.util.*;
+import java.io.*;
+import java.util.Arrays;
+abstract class basePlane{
+	private int NUMVIPSEATS;
+	private int NUMLUXSEATS;
+	public void setVIPSEATS(int numberOfSeats){NUMVIPSEATS = numberOfSeats;}
+	public void setLUXSEATS(int numberOfSeats){NUMLUXSEATS = numberOfSeats;}
+	public void seatVIP(){}
+	public void seatLUX(){}
+}
+class planeRC407 extends basePlane {
+}
+class planeTR707 extends basePlane{
+
+}
+class planeKR381 extends basePlane{
+
 }
 public class assignment3 
 {
@@ -217,6 +234,25 @@ public class assignment3
      }
   }
 
+  private static void readData() throws SQLException, IOException
+  {
+  	String file = "planes.txt";
+  	BufferedReader br = new BufferedReader(new FileReader(file));
+  	String cLine = br.readLine();
+  	br.close();
+  	String tokens[] = cLine.split( " ");
+  	System.out.println(tokens[0]);
+  	if( tokens[0].equals("P")){insertPassenger(tokens);}
+  	else {insertScheduledFlight(tokens);}
+  }
+  private static void insertPassenger(String info[]) throws SQLException
+  {
+  	
+  }
+  private static void insertScheduledFlight(String info[]) throws SQLException
+  {
+  	System.out.println(Arrays.toString(info));
+  }
   public static ResultSet displayUsers() throws SQLException, ClassNotFoundException 
   {
    Statement state;
@@ -245,6 +281,7 @@ public class assignment3
 		
     try 
       {
+      	readData();
         getConnection();
 	buildDatabase(DBExists);
 
